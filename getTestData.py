@@ -26,7 +26,7 @@ def init_twitter_API():
 def init_mongodb():
 	# Mongodb instance on port 27017 (Default monogdb port).
 	client = pymongo.MongoClient('localhost:27017')
-	db = client.MyTweetsdb
+	db = client.NLPTestData
 	return db
 
 def parse_json_data(data):
@@ -57,7 +57,7 @@ def get_data(user_name):
 	# Gets last 100 tweets from each user from the moment you execute this code.
 	# For instance, if I run this code at 10am Jan 10th 2016 I'd be receiving 
 	# all the 100 tweets that were published before that time.
-	for tweets in tweepy.Cursor(api.user_timeline, id = user_name).items(100):
+	for tweets in tweepy.Cursor(api.search, q = user_name, languages = 'en').items(5):
 		data = json.dumps(tweets._json)
 		[date, tweet_id, screen_name, text] = parse_json_data(data)
 		push_tweet_to_db(date, tweet_id, screen_name, text)
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 	db = init_mongodb()
 	print 'Initialized Mongodb Instance.' + '\n' 
 
-	user_names = ['nytimes', 'cnn', 'abc', 'ajenglish', 'bbcnews', 'washingtonpost', 'usatoday', 'thetimes', 'cnet', 'telegraph']
+	user_names = ['oscars', 'superbowl', 'grammy', 'trump', 'election2016']
 
 	for user_name in user_names:
 		get_data(user_name)
