@@ -1,14 +1,13 @@
 # Event Detection from Tweets
 # -*- coding: utf-8 -*-
 
-# Run this code first. This file gets the tweet data from 10 different news companies.
+# Data collection
 
 __author__ = 'Shree Ranga Raju'
 
 import tweepy
-import pprint
-import codecs
 import json
+import pprint
 
 def init_twitter_API():
 	# Twitter API Keys and Secrets
@@ -26,14 +25,15 @@ def init_twitter_API():
 
 def parse_json_data(data):
 	tweet = json.loads(data)
+	# pprint.pprint(tweet)
 	# date = tweet['created_at']
 	# tweet_id = tweet['id']
 	# screen_name = tweet['user']['name']
 	# Consider retweet as a tweet from the user
 	if 'retweeted_status' in tweet:
-		text = tweet['retweeted_status']['text']
+		text = tweet['retweeted_status']['full_text']
 	else:
-		text = tweet['text']
+		text = tweet['full_text']
 	# return [date, tweet_id, screen_name, text]
 	return text
 
@@ -48,32 +48,31 @@ def parse_json_data(data):
 # 	print "wrote to file"
 
 def get_data(user_name, fdata):
-	# Gets last 100 tweets from each user from the moment you execute this code.
-	# For instance, if I run this code at 10am Jan 10th 2016 I'd be receiving
-	# all the 100 tweets that were published before that time.
-	for tweets in tweepy.Cursor(api.user_timeline, id = user_name).items(3):
+	# i = 0
+	# Gets last 100 tweets from each user from the moment this script is run.
+	for tweets in tweepy.Cursor(api.user_timeline, id = user_name, tweet_mode = 'extended').items(100):
 		data = json.dumps(tweets._json)
 		tweet_text = parse_json_data(data)
-		# push_tweet_to_file(tweet_text)
-		print tweet_text
+		# print tweet_text
 		fdata.write(str(tweet_text.encode('utf8')) + "\n")
 
 
 if __name__ == '__main__':
 
 	api = init_twitter_API()
-	print 'Initialized Twitter API.' + '\n'
-
-	# user_names = ['nytimes', 'cnn', 'abc', 'ajenglish', 'bbcnews', 'washingtonpost', 'usatoday', 'thetimes', 'cnet', 'telegraph']
-
-	user_names = ['nytimes']
+	print 'Initialized Twitter API.'
 
 	fdata = fdata = open("data.txt", "w")
+
+	user_names = ['nytimes', 'cnn', 'abc', 'ajenglish', 'bbcnews', 'washingtonpost', 'usatoday', 'thetimes', 'cnet', 'telegraph']
+	# user_names = ['nytimes', 'cnn']
 
 	for user_name in user_names:
 		get_data(user_name, fdata)
 
 	fdata.close()
+
+	print "Data Collection done!"
 
 
 
