@@ -1,5 +1,5 @@
 # Event Detection from Tweets
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
 __author__ = 'Shree Ranga Raju'
 
@@ -11,8 +11,6 @@ import nltk
 
 import re
 from collections import Counter
-
-import pymongo
 
 import fastcluster
 import CMUTweetTagger
@@ -111,12 +109,12 @@ if __name__ == '__main__':
 	tid_to_raw_tweet = {} # tweet id to raw tweet
 	tid_corpus = [] # tweet id corpus
 	corpus = [] # tweet corpus
-	
+
 	# Database initialization
 	client = pymongo.MongoClient('localhost:27017')
 	if 'MyTweetsdb' not in client.database_names():
 		print 'Database MyTweetsdb does not exist! Run getData.py.'
-		
+
 	for i in client.MyTweetsdb.tweets.find():
 		text = i['tweet_text']
 		features = text_processor(text)
@@ -137,11 +135,11 @@ if __name__ == '__main__':
 	# Minimum n-gram range is 2 and maximum is 3
 	vectorizer = CountVectorizer(min_df = 5, binary = True, ngram_range = (2,3))
 	X = vectorizer.fit_transform(corpus)
-	
+
 	# Get Vocabulary list
 	vocX = vectorizer.get_feature_names()
-	
-	# More filtering of tweets based on vocabulary. 
+
+	# More filtering of tweets based on vocabulary.
 	# So much filtering because it helps in scaling.
 	map_index_after_cleaning = {}
 	Xclean = np.zeros((1, X.shape[1]))
@@ -186,8 +184,8 @@ if __name__ == '__main__':
 	print freqTwCl.most_common()
 
 
-	
 
 
-				
-			
+
+
+
