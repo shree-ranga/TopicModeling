@@ -117,6 +117,8 @@ if __name__ == '__main__':
 
 	# Change the original X to Xclean
 	X = Xclean
+	print "Shape of Xclean is {}".format(X.shape)
+	print "The number of significant tweets is", X.shape[0]
 
 	# Scale the data to zero mean and unit variance.
 	# Normalize the standardized using l_2 norm
@@ -134,14 +136,27 @@ if __name__ == '__main__':
 	dt = 0.7
 
 	indL = sch.fcluster(L, dt*distMatrix.max(), 'distance')
+	npindL = np.array(indL)
 
+	# get the first 5 clusters with most number of tweets.
+	# (a,b) a occured b # of times or a is also the cluster number.
 	freqTwCl = Counter(indL)
+	# print "n_clusters", len(freqTwCl)
+	# print freqTwCl
 
-	print "n_clusters:", len(freqTwCl)
+	# minimum number of tweets in a cluster = 5
+	freq_th = 5
 
-	print freqTwCl.most_common(5)
-
-
+	# picking the top 5 most populated clusters
+	for clfreq in freqTwCl.most_common(5):
+		cl = clfreq[0]
+		freq = clfreq[1]
+		if freq >= freq_th:
+			clidx = (npindL == cl).nonzero()[0].tolist()
+			print clidx
+	# Todo
+	# write tweets to output.txt
+	# rank cluster
 
 
 
