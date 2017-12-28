@@ -11,10 +11,10 @@ import pprint
 
 def init_twitter_API():
 	# Twitter API Keys and Secrets
-	consumer_key = 'pWA5z44PjdxpkT6bcX9vrrjdQ'
-	consumer_secret = 's347W3diJm0zoSYvKDMBXi7tHKlaZyKkqovPBImfWsIC2ayc8o'
-	access_token = '144670619-MWz10ABNcnBiMei1ljFRZ1Fj9dVblOn8ZPPUNvZj'
-	access_secret = 'Vvk3WF9MN6GgOnyA9Q1qXTM37v740U4KPi59wx5CNUSGt'
+	consumer_key = ''
+	consumer_secret = ''
+	access_token = ''
+	access_secret = ''
 
 	auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 	auth.set_access_token(access_token, access_secret)
