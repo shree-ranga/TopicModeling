@@ -64,7 +64,7 @@ def text_processor(text):
 if __name__ == '__main__':
 
 	fdata = open("data.txt", "r")
-	debug = 0
+	debug = 1
 	stop_words = load_stopwords()
 	tid = 0
 	n_tweets = 0
@@ -79,13 +79,13 @@ if __name__ == '__main__':
 		n_tweets += 1
 		# Make sure features has more than 3 tokens. Tweets are more meaningful that way.
 		if len(features) > 3:
-			tid += 1
 			for feature in features:
 				tweet_bag += feature.decode('utf-8','ignore') + ","
 			tweet_bag = tweet_bag[:-1]
 			tid_corpus.append(tid)
 			tid_to_raw_tweet[tid] = text
 			corpus.append(tweet_bag)
+			tid += 1
 
 
 	# Vectorizer
@@ -99,21 +99,14 @@ if __name__ == '__main__':
 	vocX = vectorizer.get_feature_names()
 
 	# More filtering of tweets based on vocabulary.
-	# map_index_after_cleaning = {}
+	map_index_after_cleaning = {}
 	Xclean = np.zeros((1, X.shape[1]))
 	for i in range(0, X.shape[0]):
 		if X[i].sum() >= 3	:
 			Xclean = np.vstack([Xclean, X[i].toarray()])
-	# 		map_index_after_cleaning[Xclean.shape[0] - 2] = i
+			map_index_after_cleaning[Xclean.shape[0] - 2] = i
 
 	Xclean = Xclean[1:,]
-
-	# print 'Total number of tweets in the database is {}'.format(n_tweets)
-	# print 'Total number of tweets in the corpus after first step of cleaning is {}'.format(len(corpus))
-	# print 'length of vocabulary is {}'.format(len(vocX))
-	# print 'Shape of X before vocabulary cleaning is {}'.format(X.shape)
-	# print 'Shape of X after vocabulary cleaning (Xclean) is {}'.format(Xclean.shape)
-	# print 'There are at most {} significant tweets among total number of ({}) tweets'.format(Xclean.shape[0], n_tweets)
 
 	# Change the original X to Xclean
 	X = Xclean
@@ -133,7 +126,7 @@ if __name__ == '__main__':
 	L = fastcluster.linkage(distMatrix, method = 'average')
 
 	# Dendogram cutting threshold
-	dt = 0.7
+	dt = 0.5
 
 	indL = sch.fcluster(L, dt*distMatrix.max(), 'distance')
 	npindL = np.array(indL)
@@ -153,12 +146,18 @@ if __name__ == '__main__':
 		freq = clfreq[1]
 		if freq >= freq_th:
 			clidx = (npindL == cl).nonzero()[0].tolist()
-			print clidx
+			#print clidx
+
+	if (debug == 1):
+		print "--------------------------------------------------------------------"
+		print "Printing tweets from just one cluster"
+		tids = []
+		for i in clidx:
+			tids.append(map_index_after_cleaning[i])
+		for j in tids:
+			print tid_to_raw_tweet[j] + "/n"
+
 	# Todo
 	# write tweets to output.txt
 	# rank cluster
-
-
-
-
 
