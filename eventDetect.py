@@ -64,6 +64,7 @@ def text_processor(text):
 if __name__ == '__main__':
 
 	fdata = open("data.txt", "r")
+	fout = open("output.txt", "w")
 	debug = 1
 	stop_words = load_stopwords()
 	tid = 0
@@ -149,15 +150,18 @@ if __name__ == '__main__':
 			#print clidx
 
 	if (debug == 1):
-		print "--------------------------------------------------------------------"
-		print "Printing tweets from just one cluster"
+		fout.write("--------------------------------------------------------------------" + "\n")
+		fout.write("Printing tweets from just one cluster" + "\n")
+		fout.write("--------------------------------------------------------------------" + "\n")
 		tids = []
 		for i in clidx:
 			tids.append(map_index_after_cleaning[i])
 		for j in tids:
-			print tid_to_raw_tweet[j] + "/n"
+			fout.write(str(tid_to_raw_tweet[j]) + "/n")
 
+	fdata.close()
+	fout.close()
 	# Todo
-	# write tweets to output.txt
+	# write all cluster tweets to output.txt
 	# rank cluster
 
