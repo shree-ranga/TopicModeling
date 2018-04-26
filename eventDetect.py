@@ -23,6 +23,7 @@ from sklearn import metrics
 
 # Load stop words from nltk library
 def load_stopwords():
+	# stop_words = nltk.download('stopwords')
 	stop_words = nltk.corpus.stopwords.words('english')
 	stop_words.extend(['rt&amp', '&amp', 'rt', 'retweet'])
 	stop_words = set(stop_words)
@@ -147,21 +148,16 @@ if __name__ == '__main__':
 		freq = clfreq[1]
 		if freq >= freq_th:
 			clidx = (npindL == cl).nonzero()[0].tolist()
-			#print clidx
-
-	if (debug == 1):
-		fout.write("--------------------------------------------------------------------" + "\n")
-		fout.write("Printing tweets from just one cluster" + "\n")
-		fout.write("--------------------------------------------------------------------" + "\n")
-		tids = []
-		for i in clidx:
-			tids.append(map_index_after_cleaning[i])
-		for j in tids:
-			fout.write(str(tid_to_raw_tweet[j]) + "/n")
+			if (debug == 1):
+				fout.write("--------------------------------------------------------------------" + "\n")
+				tids = []
+				for i in clidx:
+					tids.append(map_index_after_cleaning[i])
+				for j in tids:
+					fout.write(str(tid_to_raw_tweet[j]) + "/n")
 
 	fdata.close()
 	fout.close()
 	# Todo
-	# write all cluster tweets to output.txt
 	# rank cluster
 
