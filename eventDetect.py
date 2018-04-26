@@ -197,6 +197,4 @@ if __name__ == '__main__':
 
 	fdata.close()
 	fout.close()
-	# Todo
-	# rank cluster
 
