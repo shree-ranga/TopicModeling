@@ -66,13 +66,14 @@ if __name__ == '__main__':
 
 	fdata = open("data.txt", "r")
 	fout = open("output.txt", "w")
-	debug = 1
 	stop_words = load_stopwords()
 	tid = 0
 	n_tweets = 0
 	tid_to_raw_tweet = {} # tweet id to raw tweet
 	tid_corpus = [] # tweet id corpus
 	corpus = [] # tweet corpus
+
+	debug = 1
 
 	for i in fdata.readlines():
 		text = i
@@ -99,6 +100,8 @@ if __name__ == '__main__':
 
 	# Get Vocabulary list
 	vocX = vectorizer.get_feature_names()
+	# print "Vocabulary: ", vocX
+	# print "\n"
 
 	# More filtering of tweets based on vocabulary.
 	map_index_after_cleaning = {}
@@ -115,6 +118,32 @@ if __name__ == '__main__':
 	print "Shape of Xclean is {}".format(X.shape)
 	print "The number of significant tweets is", X.shape[0]
 
+	# POS Tokens (word, tag, confidence)
+	boost_entity = {}
+	pos_tokens = CMUTweetTagger.runtagger_parse([term.upper() for term in vocX])
+	for l in pos_tokens:
+		term = ''
+		for gr in range(0,len(l)):
+			term += l[gr][0].lower() + " "
+		if "^" in str(l):
+			boost_entity[term.strip()] = 2.5
+		else:
+			boost_entity[term.strip()] = 1.0
+
+	# ranking?
+	dfX = X.sum(axis=0)
+	keys = vocX
+	vals = dfX
+	dfVoc = {}
+	boosted_wdfVoc = {}
+	# print "vals", vals
+	for k,v in zip(keys, vals):
+		dfVoc[k] = v
+	for k in dfVoc:
+		boosted_wdfVoc[k] = dfVoc[k] * boost_entity[k]
+	# print sorted( ((v,k) for k,v in boosted_wdfVoc.iteritems()), reverse=True)
+
+
 	# Scale the data to zero mean and unit variance.
 	# Normalize the standardized using l_2 norm
 	Xdense = np.matrix(X).astype('float')
@@ -128,7 +157,7 @@ if __name__ == '__main__':
 	L = fastcluster.linkage(distMatrix, method = 'average')
 
 	# Dendogram cutting threshold
-	dt = 0.5
+	dt = 1.0
 
 	indL = sch.fcluster(L, dt*distMatrix.max(), 'distance')
 	npindL = np.array(indL)
@@ -140,15 +169,25 @@ if __name__ == '__main__':
 	# print freqTwCl
 
 	# minimum number of tweets in a cluster = 5
-	freq_th = 5
+	freq_th = 3
+	cluster_score = {}
 
 	# picking the top 5 most populated clusters
 	for clfreq in freqTwCl.most_common(5):
 		cl = clfreq[0]
 		freq = clfreq[1]
+		cluster_score[cl] = 0
 		if freq >= freq_th:
 			clidx = (npindL == cl).nonzero()[0].tolist()
+			cluster_centroid = X[clidx].sum(axis=0)
+			cluster_tweet = vectorizer.inverse_transform(cluster_centroid)
+			for term in np.nditer(cluster_tweet):
+				cluster_score[cl] = max(cluster_score[cl], boosted_wdfVoc[str(term).strip()])
+			cluster_score[cl] /= freq
+			print "cluster_score", cluster_score
 			if (debug == 1):
+				fout.write("\n")
+				fout.write("Score of the below cluster is " + str(cluster_score[cl]))
 				fout.write("--------------------------------------------------------------------" + "\n")
 				tids = []
 				for i in clidx:
