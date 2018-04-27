@@ -4,8 +4,7 @@
 __author__ = 'Shree Ranga Raju'
 
 # Import Modules
-import numpy as np
-import matplotlib.pyplot as plt
+import numpy as np 	
 import nltk
 
 import re
@@ -157,7 +156,7 @@ if __name__ == '__main__':
 	L = fastcluster.linkage(distMatrix, method = 'average')
 
 	# Dendogram cutting threshold
-	dt = 1.0
+	dt = 0.5
 
 	indL = sch.fcluster(L, dt*distMatrix.max(), 'distance')
 	npindL = np.array(indL)
@@ -169,7 +168,7 @@ if __name__ == '__main__':
 	# print freqTwCl
 
 	# minimum number of tweets in a cluster = 5
-	freq_th = 3
+	freq_th = 5
 	cluster_score = {}
 
 	# picking the top 5 most populated clusters
